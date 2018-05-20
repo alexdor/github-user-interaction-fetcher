@@ -1,0 +1,12 @@
+version: "3.2"
+services:
+  github-fetcher:
+    build: .
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    environment:
+      - GITHUB_TOKEN=
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8

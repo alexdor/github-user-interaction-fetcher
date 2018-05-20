@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Github Fetcher</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="//cdn.muicss.com/mui-0.9.39/css/mui.min.css" rel="preload" as="style" />
+  <link rel="preload" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" as="stylesheet" />
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js" as="script" />
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/whatwg-fetch@2.0.4/fetch.min.js" as="script" />
+
+</head>
+
+<body>
+  <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+  <div class="mui-container">
+    <div class="mui-panel">
+      <br />
+      <br />
+      <h1 class="mui--text-display1 mui--text-center">Get contributions from github users</h1>
+      <br />
+      <br />
+      <form class="mui-form" onsubmit="getData(event)">
+        <div class="mui-textfield">
+          <label for="input">Github Username</label>
+          <textarea id="input"> </textarea>
+        </div>
+        <button class="mui-btn mui-btn--primary mui-btn--raised" id="submitBtn" type="submit">Submit</button>
+      </form>
+      <br/>
+      <div class="mui-divider"></div>
+      <br/>
+      <div id="loader" style="display: none;" class="loader">Loading...</div>
+      <table id="errorTable" class="mui-table">
+      </table>
+      <br />
+      <table id="dataTable" class="mui-table">
+      </table>
+    </div>
+  </div>
+</body>
+<link href="//cdn.muicss.com/mui-0.9.39/css/mui.min.css" rel="stylesheet" type="text/css" async/>
+<link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css" async />
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@2.0.4/fetch.min.js" async defer></script>
+<style>
+  body {
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
+  }
+
+</style>
+<script>
+  function getData(event) {
+    event.preventDefault();
+
+    var input = document.getElementById("input").value;
+    if (!input) {
+      return
+    }
+    var dataTable = document.getElementById("dataTable"),
+      submitBtn = document.getElementById("submitBtn"),
+      errorTable = document.getElementById("errorTable"),
+      loader = document.getElementById("loader")
+
+    loader.style.display = "block";
+    submitBtn.disabled = true;
+    dataTable.innerHTML = "";
+    errorTable.innerHTML = "";
+
+
+    var body = input.split(",");
+
+    fetch("/api/v1/userInfo", {
+      method: "POST",
+      body: JSON.stringify({
+        users: body
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(e =>
+      e.json()
+    ).then(text => {
+      var errors = text.errors
+      if (errors) {
+        var errorHTML = "<thead><tr><th>User</th><th>Error</th></tr></thead><tbody>"
+        for (let i = 0; i < errors.length; i++) {
+          errorHTML += "<tr><td>" + errors[i].user + "</td><td>" + JSON.stringify(errors[i].error) + "</td></tr>"
+        }
+        errorHTML += "</tbody>"
+        errorTable.innerHTML = errorHTML;
+      }
+
+      var res = text.response
+      if (!res) {
+        loader.style.display = "none";
+        submitBtn.disabled = false;
+        return
+      }
+      var tableHTML = "<thead><tr><th>Urls</th></tr></thead><tbody>"
+      for (let i = 0; i < res.length; i++) {
+        tableHTML += "<tr><td>" + res[i] + "</td></tr>"
+      }
+      loader.style.display = "none";
+      tableHTML += "</tbody>"
+      dataTable.innerHTML = tableHTML
+      submitBtn.disabled = false;
+    }).catch(e => {
+      console.error(e)
+      errorTable.innerHTML = "<p>" + JSON.stringify(e) + "</p>"
+      submitBtn.disabled = false;
+      loader.style.display = "none"
+    })
+  }
+
+</script>
+
+<style>
+  .loader,
+  .loader:before,
+  .loader:after {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation: load7 1.8s infinite ease-in-out;
+    animation: load7 1.8s infinite ease-in-out;
+  }
+
+  .loader {
+    color: #2196f3;
+    font-size: 10px;
+    margin: 80px auto;
+    position: relative;
+    text-indent: -9999em;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+  }
+
+  .loader:before,
+  .loader:after {
+    content: '';
+    position: absolute;
+    top: 0;
+  }
+
+  .loader:before {
+    left: -3.5em;
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+  }
+
+  .loader:after {
+    left: 3.5em;
+  }
+
+  @-webkit-keyframes load7 {
+    0%,
+    80%,
+    100% {
+      box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+      box-shadow: 0 2.5em 0 0;
+    }
+  }
+
+  @keyframes load7 {
+    0%,
+    80%,
+    100% {
+      box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+      box-shadow: 0 2.5em 0 0;
+    }
+  }
+
+</style>
+
+</html>
