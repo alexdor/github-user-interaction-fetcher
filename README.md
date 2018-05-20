@@ -16,7 +16,7 @@ In order to run this app you need to generate a github access token from [here](
 ### Opton 2: Native
 
 * Make sure you have go and dep install on your machine
-* Set the environment variable GITHUB_TOKEN to your Github access key for example `GITHUB_TOKEN=aldkfjafjalfjdsffssdf`
+* Set the environment variable GITHUB_TOKEN to your Github access key for example `export GITHUB_TOKEN=your_access_key`
 * Start the app `go run main.go`
 
 ## Technologies Used:
