@@ -24,7 +24,7 @@ type (
 		Errors []ResponseError `json:"errors"`
 	}
 
-	urlsType map[string]int8
+	urlsType map[string]uint8
 
 	/**
 	* GraphQL Types
@@ -141,13 +141,11 @@ func collectUserData(ctx context.Context, user string, res *response, urls urlsT
 	variables := map[string]interface{}{"login": githubv4.String(user)}
 	userData := initialUserQuery{}
 	err := client.Query(ctx, &userData, variables)
-	_ = err
 	initialData := userQueryWithAfter(userData)
 	wg.Add(1)
 	go writeToResponse(&err, res, &initialData, variables, urls, mutex, wg)
 
 	if userData.User.Issues.PageInfo.HasNextPage || userData.User.IssueComments.PageInfo.HasNextPage || userData.User.Repositories.PageInfo.HasNextPage || userData.User.RepositoriesContributedTo.PageInfo.HasNextPage {
-		wg.Add(1)
 		fetchAdditionalData(ctx, res, urls, &initialData, variables, mutex, wg)
 	}
 
@@ -157,7 +155,6 @@ func collectUserData(ctx context.Context, user string, res *response, urls urlsT
  * Fetch additional data for user
  */
 func fetchAdditionalData(ctx context.Context, res *response, urls urlsType, userRes *userQueryWithAfter, variables map[string]interface{}, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	defer wg.Done()
 	userData := userQueryWithAfter{}
 	userStruct := &userRes.User
 
@@ -184,7 +181,6 @@ func fetchAdditionalData(ctx context.Context, res *response, urls urlsType, user
 	go writeToResponse(&err, res, &userData, variables, urls, mutex, wg)
 
 	if userData.User.Issues.PageInfo.HasNextPage || userData.User.IssueComments.PageInfo.HasNextPage || userData.User.Repositories.PageInfo.HasNextPage || userData.User.RepositoriesContributedTo.PageInfo.HasNextPage {
-		wg.Add(1)
 		fetchAdditionalData(ctx, res, urls, &userData, variables, mutex, wg)
 	}
 
