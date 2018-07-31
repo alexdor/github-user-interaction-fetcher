@@ -1,4 +1,6 @@
 # Github Contributions Fetcher
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Falexdor%2Fgithub-user-interaction-fetcher.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Falexdor%2Fgithub-user-interaction-fetcher?ref=badge_shield)
+
 
 A simple go app, that fetches all the open source Github repositories that a list of users has interacted with, using Github's GraphQL API. As an interaction, it considers a contribution, a commit, a new issue or a comment on an issue.
 
@@ -23,3 +25,7 @@ In order to run this app you need to generate a github access token from [here](
 
 * [Gin](https://gin-gonic.github.io/gin/)
 * [MUI CSS](https://www.muicss.com/)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Falexdor%2Fgithub-user-interaction-fetcher.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Falexdor%2Fgithub-user-interaction-fetcher?ref=badge_large)
